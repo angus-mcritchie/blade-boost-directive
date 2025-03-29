@@ -7,50 +7,58 @@ beforeEach(function () {
 });
 
 it('can repeat without variables', function () {
-    expectBlade(<<<'blade'
-        @repeated('hello-world')
-            Hello World!
+    expectBlade(<<<'BLADE'
+        @repeated('foo')
+            foo
         @endrepeated
-    blade)
-        ->toContain('Hello World!');
+    BLADE)
+        ->toContain('foo');
 });
 
 it('can repeat with variables', function () {
-    expectBlade(<<<'blade'
+    expectBlade(<<<'BLADE'
         @foreach(['Angus', 'John'] as $name)
             @repeated('hello', ['{name}' => $name])
                 Hello, {name}!
             @endrepeated
         @endforeach
-    blade)
+    BLADE)
         ->toContain('Hello, John!')
         ->toContain('Hello, Angus!');
 });
 
+it('can throw exception when no name provided', function () {
+    expectBlade(<<<'BLADE'
+        @repeated
+            foo
+        @endrepeated
+    BLADE);
+})->throws(InvalidArgumentException::class);
+
 it('can nest named repeat', function () {
-    expectBlade(<<<'blade'
+    expectBlade(<<<'BLADE'
         @repeated('level-1')
-            level 1
+            level-1
 
             @repeated('level-2')
-                level 2
+                level-2
             @endrepeated
         @endrepeated
-    blade)
-        ->toContain('Hello World!')
-        ->toContain('Hello World 2!');
+    BLADE)
+        ->toContain('level-1')
+        ->toContain('level-2');
 });
 
 it('can nest anonymous repeat', function () {
-    expectBlade(<<<'blade'
-        @repeated
-            level 1
+    expectBlade(<<<'BLADE'
+        @repeated('level-1-and-2')
+            level-1
 
-            @repeated
-                level 2
+            @repeated('level-2')
+                level-2
             @endrepeated
         @endrepeated
-    blade)
-        ->toContain('level 1')
-        ->toContain('level 2');
+    BLADE)
+        ->toContain('level-1')
+        ->toContain('level-2');
 });
