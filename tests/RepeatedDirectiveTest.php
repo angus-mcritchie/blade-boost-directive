@@ -27,7 +27,6 @@ it('can repeat with variables', function () {
         ->toContain('Hello, Angus!');
 });
 
-
 it('can nest named repeat', function () {
     expectBlade(<<<'blade'
         @repeated('level-1')
@@ -39,8 +38,7 @@ it('can nest named repeat', function () {
         @endrepeated
     blade)
         ->toContain('Hello World!')
-        ->toContain('Hello World 2!')
-    ;
+        ->toContain('Hello World 2!');
 });
 
 it('can nest anonymous repeat', function () {
@@ -54,6 +52,5 @@ it('can nest anonymous repeat', function () {
         @endrepeated
     blade)
         ->toContain('level 1')
-        ->toContain('level 2')
-    ;
+        ->toContain('level 2');
 });
