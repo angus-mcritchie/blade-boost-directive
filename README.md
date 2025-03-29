@@ -1,69 +1,48 @@
-# :package_description
+# Lightning-Fast Blade Components with `@repeated`
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-<!--delete-->
----
-This repo can be used to scaffold a Laravel package. Follow these steps to get started:
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/angus-mcritchie/blade-repeated-directive.svg?style=flat-square)](https://packagist.org/packages/angus-mcritchie/blade-repeated-directive)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/angus-mcritchie/blade-repeated-directive/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/angus-mcritchie/blade-repeated-directive/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/angus-mcritchie/blade-repeated-directive/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/angus-mcritchie/blade-repeated-directive/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/angus-mcritchie/blade-repeated-directive.svg?style=flat-square)](https://packagist.org/packages/angus-mcritchie/blade-repeated-directive)
 
-1. Press the "Use this template" button at the top of this repo to create a new repo with the contents of this skeleton.
-2. Run "php ./configure.php" to run a script that will replace all placeholders throughout all the files.
-3. Have fun creating your package.
-4. If you need help creating a package, consider picking up our <a href="https://laravelpackage.training">Laravel Package Training</a> video course.
----
-<!--/delete-->
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
-
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/:package_name.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/:package_name)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+Adds a `@repeated` Blade directive to your Laravel application. Only speed up performance if you're rendering the same component multiple times as it renderes the component once and caches the output. Then does a simple `str_replace` for any variables passed to the directive (optional).
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require :vendor_slug/:package_slug
-```
-
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag=":package_slug-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag=":package_slug-config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag=":package_slug-views"
+composer require angus-mcritchie/blade-repeated-directive
 ```
 
 ## Usage
+The `@repeated` directive can be used to wrap any Blade component. It will render the component once and cache the output. Then it will replace any variables passed to the directive.
+This is very useful if you're rendering many of the same components in a loop or if you're rendering the same component multiple times in a view.
 
-```php
-$variable = new VendorName\Skeleton();
-echo $variable->echoPhrase('Hello, VendorName!');
+### With Variables
+You can pass variables to the `@repeated` directive. The variables will be replaced in the output of the component.
+
+```blade
+@foreach($posts as $post)
+    @repeated('post-card', ['name' => $post->name, 'href' => route('post.show', $post)])
+        <x-post.card name="{name}" href="{href}" />
+    @endrepeated
+@endforeach
 ```
+
+### Without Variables
+You can still get excellent performace improvments for components that don't use any variables.
+
+```blade
+@foreach($posts as $post)
+    @repeated('post-card-BladeRepeatedDirective')
+        <x-post.card-BladeRepeatedDirective />
+    @endrepeated
+@endforeach
+```
+
+## Benchmarks
+Our [benchmarks](./benchmarks.md) show the performance improvements you can expect when using the `@repeated` directive. The benchmarks are not exhaustive and only serve as a demonstration of the performance improvements you can expect.
 
 ## Testing
 
