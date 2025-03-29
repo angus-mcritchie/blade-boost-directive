@@ -11,7 +11,7 @@ class BladeRepeatedDirective
             $replacements = substr($expression, strpos($expression, ',') + 1);
             $replacements = trim($replacements, ',');
         } else {
-            $name = $expression;
+            $name = $expression ?: 'anonymous';
             $replacements = 'null';
         }
 
