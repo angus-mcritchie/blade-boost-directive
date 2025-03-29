@@ -19,6 +19,13 @@ composer require angus-mcritchie/blade-repeated-directive
 The `@repeated` directive can be used to wrap any Blade component. It will render the component once and cache the output. Then it will replace any variables passed to the directive.
 This is very useful if you're rendering many of the same components in a loop or if you're rendering the same component multiple times in a view.
 
+### Signature
+```blade
+@repeated(string $name, array $variables = [])
+    <x-component />
+@endrepeated
+```
+
 ### Without Variables
 You can still get excellent performace improvments for components that don't use any variables.
 
@@ -35,8 +42,22 @@ You can pass variables to the `@repeated` directive. The variables will be repla
 
 ```blade
 @foreach($posts as $post)
-    @repeated('post-card', ['name' => $post->name, 'href' => route('post.show', $post)])
-        <x-post.card name="{name}" href="{href}" />
+    @repeated('post-card', ['{name}' => $post->name, '{url}' => route('post.show', $post)])
+        <x-post.card name="{name}" href="{url}" />
+    @endrepeated
+@endforeach
+```
+
+### Non-Component Usage
+You can also use the `@repeated` directive with any Blade code, including multiple components.
+
+```blade
+@foreach($products as $product)
+    @repeated('product-card-links', ['{id}' => $product->id, '{url}' => route('product.show', $product)])
+        <x-product.add-button id="{id}" />
+        <x-product.view-button href="{url}" />
+        <x-product.wishlist-button id="{id}" />
+        <x-product.compare-button id="{id}" />
     @endrepeated
 @endforeach
 ```
