@@ -1,6 +1,6 @@
 {
     "name": "angus-mcritchie/blade-repeated-directive",
-    "description": ":package_description",
+    "description": "Adds a `@repeated` Blade directive to your Laravel application. Only speed up performance if you're rendering the same component multiple times as it renderes the component once and caches the output. Then does a simple `str_replace` for any variables passed to the directive (optional).",
     "keywords": [
         "angus-mcritchie",
         "laravel",
@@ -39,8 +39,7 @@
         "pestphp/pest-plugin-laravel": "^3.0",
         "phpstan/extension-installer": "^1.3||^2.0",
         "phpstan/phpstan-deprecation-rules": "^1.1||^2.0",
-        "phpstan/phpstan-phpunit": "^1.3||^2.0",
-        "spatie/laravel-ray": "^1.35"
+        "phpstan/phpstan-phpunit": "^1.3||^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -73,10 +72,7 @@
         "laravel": {
             "providers": [
                 "AngusMcRitchie\\BladeRepeatedDirective\\BladeRepeatedDirectiveServiceProvider"
-            ],
-            "aliases": {
-                "BladeRepeatedDirective": "AngusMcRitchie\\BladeRepeatedDirective\\Facades\\BladeRepeatedDirective"
-            }
+            ]
         }
     },
     "minimum-stability": "dev",

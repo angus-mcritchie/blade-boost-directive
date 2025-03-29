@@ -19,6 +19,16 @@ composer require angus-mcritchie/blade-repeated-directive
 The `@repeated` directive can be used to wrap any Blade component. It will render the component once and cache the output. Then it will replace any variables passed to the directive.
 This is very useful if you're rendering many of the same components in a loop or if you're rendering the same component multiple times in a view.
 
+### Without Variables
+You can still get excellent performace improvments for components that don't use any variables.
+
+```blade
+@foreach($posts as $post)
+    @repeated('post-card')
+        <x-post.card />
+    @endrepeated
+@endforeach
+
 ### With Variables
 You can pass variables to the `@repeated` directive. The variables will be replaced in the output of the component.
 
@@ -29,16 +39,6 @@ You can pass variables to the `@repeated` directive. The variables will be repla
     @endrepeated
 @endforeach
 ```
-
-### Without Variables
-You can still get excellent performace improvments for components that don't use any variables.
-
-```blade
-@foreach($posts as $post)
-    @repeated('post-card-BladeRepeatedDirective')
-        <x-post.card-BladeRepeatedDirective />
-    @endrepeated
-@endforeach
 ```
 
 ## Benchmarks
@@ -64,7 +64,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [:author_name](https://github.com/:author_username)
+- [Angus McRitchie](https://github.com/angus-mcritchie)
 - [All Contributors](../../contributors)
 
 ## License

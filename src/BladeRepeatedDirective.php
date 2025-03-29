@@ -15,11 +15,11 @@ class BladeRepeatedDirective
             $replacements = substr($expression, strpos($expression, ',') + 1);
             $replacements = trim($replacements, ',');
         } else {
-            $name = $expression ?: "'".('anonymous_repeated_'.\Illuminate\Support\Facades\Cache::store('array')->get('repeated'))."'";
+            $name = $expression;
             $replacements = 'null';
         }
 
-        $callbackVariable = '$__repeated'.\Illuminate\Support\Facades\Cache::store('array')->get('repeated');
+        $callbackVariable = '$__repeated' . \Illuminate\Support\Facades\Cache::store('array')->get('repeated');
         $output = "<?php \$__repeatKey = {$name}; ?>";
         $output .= "<?php \$__repeatReplacements = {$replacements}; ?>";
         $output .= BladeCaptureDirective::open($callbackVariable);
@@ -30,7 +30,7 @@ class BladeRepeatedDirective
     public static function close(): string
     {
         $output = BladeCaptureDirective::close();
-        $callbackVariable = '$__repeated'.\Illuminate\Support\Facades\Cache::store('array')->get('repeated');
+        $callbackVariable = '$__repeated' . \Illuminate\Support\Facades\Cache::store('array')->get('repeated');
 
         $output .= '<?php if($__repeatReplacements) : ?>';
         $output .= "<?php echo str_replace(array_keys(\$__repeatReplacements), \$__repeatReplacements, \Illuminate\Support\Facades\Cache::store('array')->rememberForever(\$__repeatKey, {$callbackVariable})); ?>";
