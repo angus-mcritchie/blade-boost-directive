@@ -2,6 +2,8 @@
 
 namespace AngusMcritchie\BladeRepeatedDirective;
 
+use InvalidArgumentException;
+
 class BladeRepeatedDirective
 {
     public static function open(string $expression): string
@@ -11,8 +13,12 @@ class BladeRepeatedDirective
             $replacements = substr($expression, strpos($expression, ',') + 1);
             $replacements = trim($replacements, ',');
         } else {
-            $name = $expression ?: 'anonymous';
+            $name = $expression;
             $replacements = 'null';
+        }
+
+        if (!$name) {
+            throw new InvalidArgumentException('The name of the cache key is required.');
         }
 
         return <<<PHP
