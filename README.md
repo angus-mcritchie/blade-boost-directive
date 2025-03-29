@@ -28,6 +28,7 @@ You can still get excellent performace improvments for components that don't use
         <x-post.card />
     @endrepeated
 @endforeach
+```
 
 ### With Variables
 You can pass variables to the `@repeated` directive. The variables will be replaced in the output of the component.
@@ -38,7 +39,6 @@ You can pass variables to the `@repeated` directive. The variables will be repla
         <x-post.card name="{name}" href="{href}" />
     @endrepeated
 @endforeach
-```
 ```
 
 ## Benchmarks
