@@ -1,6 +1,6 @@
 {
     "name": "angus-mcritchie/blade-repeated-directive",
-    "description": "Adds a `@repeated` Blade directive to your Laravel application. Only speed up performance if you're rendering the same component multiple times as it renderes the component once and caches the output. Then does a simple `str_replace` for any variables passed to the directive (optional).",
+    "description": "Lightning-Fast Blade Components with `@repeated` Directive",
     "keywords": [
         "angus-mcritchie",
         "laravel",
