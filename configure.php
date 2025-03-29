@@ -3,9 +3,9 @@
 
 function ask(string $question, string $default = ''): string
 {
-    $answer = readline($question . ($default ? " ({$default})" : null) . ': ');
+    $answer = readline($question.($default ? " ({$default})" : null).': ');
 
-    if (!$answer) {
+    if (! $answer) {
         return $default;
     }
 
@@ -14,9 +14,9 @@ function ask(string $question, string $default = ''): string
 
 function confirm(string $question, bool $default = false): bool
 {
-    $answer = ask($question . ' (' . ($default ? 'Y/n' : 'y/N') . ')');
+    $answer = ask($question.' ('.($default ? 'Y/n' : 'y/N').')');
 
-    if (!$answer) {
+    if (! $answer) {
         return $default;
     }
 
@@ -25,7 +25,7 @@ function confirm(string $question, bool $default = false): bool
 
 function writeln(string $line): void
 {
-    echo $line . PHP_EOL;
+    echo $line.PHP_EOL;
 }
 
 function run(string $command): string
@@ -84,7 +84,7 @@ function remove_prefix(string $prefix, string $content): string
 
 function remove_composer_deps(array $names)
 {
-    $data = json_decode(file_get_contents(__DIR__ . '/composer.json'), true);
+    $data = json_decode(file_get_contents(__DIR__.'/composer.json'), true);
 
     foreach ($data['require-dev'] as $name => $version) {
         if (in_array($name, $names, true)) {
@@ -92,12 +92,12 @@ function remove_composer_deps(array $names)
         }
     }
 
-    file_put_contents(__DIR__ . '/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    file_put_contents(__DIR__.'/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 }
 
 function remove_composer_script($scriptName)
 {
-    $data = json_decode(file_get_contents(__DIR__ . '/composer.json'), true);
+    $data = json_decode(file_get_contents(__DIR__.'/composer.json'), true);
 
     foreach ($data['scripts'] as $name => $script) {
         if ($scriptName === $name) {
@@ -106,7 +106,7 @@ function remove_composer_script($scriptName)
         }
     }
 
-    file_put_contents(__DIR__ . '/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    file_put_contents(__DIR__.'/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 }
 
 function remove_readme_paragraphs(string $file): void
@@ -133,12 +133,12 @@ function determineSeparator(string $path): string
 
 function replaceForWindows(): array
 {
-    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i ' . basename(__FILE__) . ' | findstr /r /i /M /F:/ ":author :vendor :package AngusMcRitchie BladeRepeatedDirective migration_table_name vendor_name vendor_slug ajmcritchie@gmail.com"'));
+    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename(__FILE__).' | findstr /r /i /M /F:/ ":author :vendor :package AngusMcRitchie BladeRepeatedDirective migration_table_name vendor_name vendor_slug ajmcritchie@gmail.com"'));
 }
 
 function replaceForAllOtherOSes(): array
 {
-    return explode(PHP_EOL, run('grep -E -r -l -i ":author|:vendor|:package|AngusMcRitchie|BladeRepeatedDirective|migration_table_name|vendor_name|vendor_slug|ajmcritchie@gmail.com" --exclude-dir=vendor ./* ./.github/* | grep -v ' . basename(__FILE__)));
+    return explode(PHP_EOL, run('grep -E -r -l -i ":author|:vendor|:package|AngusMcRitchie|BladeRepeatedDirective|migration_table_name|vendor_name|vendor_slug|ajmcritchie@gmail.com" --exclude-dir=vendor ./* ./.github/* | grep -v '.basename(__FILE__)));
 }
 
 function getGitHubApiEndpoint(string $endpoint): ?stdClass
@@ -182,9 +182,9 @@ function searchCommitsForGitHubUsername(): string
         return [
             'name' => $name,
             'email' => $email,
-            'isMatch' => strtolower($name) === $authorName && !str_contains($name, '[bot]'),
+            'isMatch' => strtolower($name) === $authorName && ! str_contains($name, '[bot]'),
         ];
-    }, $committersLines), fn($item) => $item['isMatch']);
+    }, $committersLines), fn ($item) => $item['isMatch']);
 
     if (empty($committers)) {
         return '';
@@ -211,12 +211,12 @@ function guessGitHubUsernameUsingCli()
 function guessGitHubUsername(): string
 {
     $username = searchCommitsForGitHubUsername();
-    if (!empty($username)) {
+    if (! empty($username)) {
         return $username;
     }
 
     $username = guessGitHubUsernameUsingCli();
-    if (!empty($username)) {
+    if (! empty($username)) {
         return $username;
     }
 
@@ -232,7 +232,7 @@ function guessGitHubVendorInfo($authorName, $username): array
     $remoteUrl = shell_exec('git config remote.origin.url') ?? '';
     $remoteUrlParts = explode('/', str_replace(':', '/', trim($remoteUrl)));
 
-    if (!isset($remoteUrlParts[1])) {
+    if (! isset($remoteUrlParts[1])) {
         return [$authorName, $username];
     }
 
@@ -287,16 +287,16 @@ writeln("Namespace  : {$AngusMcRitchiespace}\\{$className}");
 writeln("Class name : {$className}");
 writeln('---');
 writeln('Packages & Utilities');
-writeln('Use Laravel/Pint     : ' . ($useLaravelPint ? 'yes' : 'no'));
-writeln('Use Larastan/PhpStan : ' . ($usePhpStan ? 'yes' : 'no'));
-writeln('Use Dependabot       : ' . ($useDependabot ? 'yes' : 'no'));
-writeln('Use Ray App          : ' . ($useLaravelRay ? 'yes' : 'no'));
-writeln('Use Auto-Changelog   : ' . ($useUpdateChangelogWorkflow ? 'yes' : 'no'));
+writeln('Use Laravel/Pint     : '.($useLaravelPint ? 'yes' : 'no'));
+writeln('Use Larastan/PhpStan : '.($usePhpStan ? 'yes' : 'no'));
+writeln('Use Dependabot       : '.($useDependabot ? 'yes' : 'no'));
+writeln('Use Ray App          : '.($useLaravelRay ? 'yes' : 'no'));
+writeln('Use Auto-Changelog   : '.($useUpdateChangelogWorkflow ? 'yes' : 'no'));
 writeln('------');
 
 writeln('This script will replace the above values in all relevant files in the project directory.');
 
-if (!confirm('Modify files?', true)) {
+if (! confirm('Modify files?', true)) {
     exit(1);
 }
 
@@ -321,26 +321,26 @@ foreach ($files as $file) {
     ]);
 
     match (true) {
-        str_contains($file, determineSeparator('src/BladeRepeatedDirective.php')) => rename($file, determineSeparator('./src/' . $className . '.php')),
-        str_contains($file, determineSeparator('src/BladeRepeatedDirectiveServiceProvider.php')) => rename($file, determineSeparator('./src/' . $className . 'ServiceProvider.php')),
-        str_contains($file, determineSeparator('src/Facades/BladeRepeatedDirective.php')) => rename($file, determineSeparator('./src/Facades/' . $className . '.php')),
-        str_contains($file, determineSeparator('src/Commands/BladeRepeatedDirectiveCommand.php')) => rename($file, determineSeparator('./src/Commands/' . $className . 'Command.php')),
-        str_contains($file, determineSeparator('database/migrations/create_BladeRepeatedDirective_table.php.stub')) => rename($file, determineSeparator('./database/migrations/create_' . title_snake($packageSlugWithoutPrefix) . '_table.php.stub')),
-        str_contains($file, determineSeparator('config/BladeRepeatedDirective.php')) => rename($file, determineSeparator('./config/' . $packageSlugWithoutPrefix . '.php')),
+        str_contains($file, determineSeparator('src/BladeRepeatedDirective.php')) => rename($file, determineSeparator('./src/'.$className.'.php')),
+        str_contains($file, determineSeparator('src/BladeRepeatedDirectiveServiceProvider.php')) => rename($file, determineSeparator('./src/'.$className.'ServiceProvider.php')),
+        str_contains($file, determineSeparator('src/Facades/BladeRepeatedDirective.php')) => rename($file, determineSeparator('./src/Facades/'.$className.'.php')),
+        str_contains($file, determineSeparator('src/Commands/BladeRepeatedDirectiveCommand.php')) => rename($file, determineSeparator('./src/Commands/'.$className.'Command.php')),
+        str_contains($file, determineSeparator('database/migrations/create_BladeRepeatedDirective_table.php.stub')) => rename($file, determineSeparator('./database/migrations/create_'.title_snake($packageSlugWithoutPrefix).'_table.php.stub')),
+        str_contains($file, determineSeparator('config/BladeRepeatedDirective.php')) => rename($file, determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php')),
         str_contains($file, 'README.md') => remove_readme_paragraphs($file),
         default => [],
     };
 }
 
-if (!$useLaravelPint) {
-    safeUnlink(__DIR__ . '/.github/workflows/fix-php-code-style-issues.yml');
-    safeUnlink(__DIR__ . '/pint.json');
+if (! $useLaravelPint) {
+    safeUnlink(__DIR__.'/.github/workflows/fix-php-code-style-issues.yml');
+    safeUnlink(__DIR__.'/pint.json');
 }
 
-if (!$usePhpStan) {
-    safeUnlink(__DIR__ . '/phpstan.neon.dist');
-    safeUnlink(__DIR__ . '/phpstan-baseline.neon');
-    safeUnlink(__DIR__ . '/.github/workflows/phpstan.yml');
+if (! $usePhpStan) {
+    safeUnlink(__DIR__.'/phpstan.neon.dist');
+    safeUnlink(__DIR__.'/phpstan-baseline.neon');
+    safeUnlink(__DIR__.'/.github/workflows/phpstan.yml');
 
     remove_composer_deps([
         'phpstan/extension-installer',
@@ -352,17 +352,17 @@ if (!$usePhpStan) {
     remove_composer_script('phpstan');
 }
 
-if (!$useDependabot) {
-    safeUnlink(__DIR__ . '/.github/dependabot.yml');
-    safeUnlink(__DIR__ . '/.github/workflows/dependabot-auto-merge.yml');
+if (! $useDependabot) {
+    safeUnlink(__DIR__.'/.github/dependabot.yml');
+    safeUnlink(__DIR__.'/.github/workflows/dependabot-auto-merge.yml');
 }
 
-if (!$useLaravelRay) {
+if (! $useLaravelRay) {
     remove_composer_deps(['spatie/laravel-ray']);
 }
 
-if (!$useUpdateChangelogWorkflow) {
-    safeUnlink(__DIR__ . '/.github/workflows/update-changelog.yml');
+if (! $useUpdateChangelogWorkflow) {
+    safeUnlink(__DIR__.'/.github/workflows/update-changelog.yml');
 }
 
 confirm('Execute `composer install` and run tests?') && run('composer install && composer test');
