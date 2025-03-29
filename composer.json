@@ -42,8 +42,7 @@
     },
     "autoload": {
         "psr-4": {
-            "AngusMcRitchie\\BladeRepeatedDirective\\": "src/",
-            "AngusMcRitchie\\BladeRepeatedDirective\\Database\\Factories\\": "database/factories/"
+            "AngusMcRitchie\\BladeRepeatedDirective\\": "src/"
         }
     },
     "autoload-dev": {
