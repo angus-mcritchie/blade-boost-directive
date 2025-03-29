@@ -17,12 +17,12 @@ class BladeRepeatedDirective
 
         return <<<PHP
             <?php
-                \$__repeatKey = {$name};
-                \$__repeatReplacements = {$replacements};
+                \$__repeatedKey = {$name};
+                \$__repeatedVariables = {$replacements};
 
-                \$__repeated = (function (\$args) {
-                    return function () use (\$args) {
-                        extract(\$args, EXTR_SKIP);
+                \$__repeatedCallback = (function (\$arguments) {
+                    return function () use (\$arguments) {
+                        extract(\$arguments, EXTR_SKIP);
                         ob_start();
             ?>
         PHP;
@@ -34,15 +34,15 @@ class BladeRepeatedDirective
             <?php return new \Illuminate\Support\HtmlString(ob_get_clean()); };
                 })(get_defined_vars());
 
-                if(\$__repeatReplacements) {
-                    echo str_replace(array_keys(\$__repeatReplacements), \$__repeatReplacements, \Illuminate\Support\Facades\Cache::store('array')->rememberForever(\$__repeatKey, \$__repeated));
+                if(\$__repeatedVariables) {
+                    echo str_replace(array_keys(\$__repeatedVariables), \$__repeatedVariables, \Illuminate\Support\Facades\Cache::store('array')->rememberForever(\$__repeatedKey, \$__repeatedCallback));
                 } else {
-                    echo \Illuminate\Support\Facades\Cache::store('array')->rememberForever(\$__repeatKey, \$__repeated);
+                    echo \Illuminate\Support\Facades\Cache::store('array')->rememberForever(\$__repeatedKey, \$__repeatedCallback);
                 }
 
-                unset(\$__repeatKey);
-                unset(\$__repeatReplacements);
-                unset(\$__repeated);
+                unset(\$__repeatedKey);
+                unset(\$__repeatedVariables);
+                unset(\$__repeatedCallback);
             ?>
         PHP;
     }
