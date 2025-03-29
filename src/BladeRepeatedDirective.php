@@ -17,7 +17,7 @@ class BladeRepeatedDirective
             $replacements = 'null';
         }
 
-        if (!$name) {
+        if (! $name) {
             throw new InvalidArgumentException('The name of the cache key is required.');
         }
 
