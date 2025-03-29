@@ -5,7 +5,7 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/angus-mcritchie/blade-repeated-directive/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/angus-mcritchie/blade-repeated-directive/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/angus-mcritchie/blade-repeated-directive.svg?style=flat-square)](https://packagist.org/packages/angus-mcritchie/blade-repeated-directive)
 
-Adds a `@repeated` Blade directive to your Laravel application. Only speed up performance if you're rendering the same component multiple times as it renderes the component once and caches the output. Then does a simple `str_replace` for any variables passed to the directive (optional).
+Adds a `@repeated` Blade directive to your Laravel application. Only speed up performance if you're rendering the same component multiple times as it renders the component once and caches the output. Then does a simple `str_replace` for any variables passed to the directive (optional).
 
 ## Installation
 
