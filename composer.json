@@ -42,12 +42,12 @@
     },
     "autoload": {
         "psr-4": {
-            "AngusMcRitchie\\BladeRepeatedDirective\\": "src/"
+            "AngusMcritchie\\BladeRepeatedDirective\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "AngusMcRitchie\\BladeRepeatedDirective\\Tests\\": "tests/",
+            "AngusMcritchie\\BladeRepeatedDirective\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -69,7 +69,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "AngusMcRitchie\\BladeRepeatedDirective\\BladeRepeatedDirectiveServiceProvider"
+                "AngusMcritchie\\BladeRepeatedDirective\\BladeRepeatedDirectiveServiceProvider"
             ]
         }
     },

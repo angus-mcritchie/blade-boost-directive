@@ -1,6 +1,6 @@
 <?php
 
-namespace AngusMcRitchie\BladeRepeatedDirective;
+namespace AngusMcritchie\BladeRepeatedDirective;
 
 use AngusMcritchie\BladeRepeatedDirective\BladeRepeatedDirective;
 use Illuminate\Support\Facades\Blade;
@@ -16,7 +16,7 @@ class BladeRepeatedDirectiveServiceProvider extends PackageServiceProvider
 
     public function packageBooted()
     {
-        Blade::directive('repeated', fn (string $expression) => BladeRepeatedDirective::open($expression));
-        Blade::directive('endrepeated', fn () => BladeRepeatedDirective::close());
+        Blade::directive('repeated', fn(string $expression) => BladeRepeatedDirective::open($expression));
+        Blade::directive('endrepeated', fn() => BladeRepeatedDirective::close());
     }
 }
