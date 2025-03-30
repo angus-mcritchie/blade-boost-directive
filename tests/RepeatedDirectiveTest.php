@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\HtmlString;
 
 beforeEach(function () {
     Artisan::call('view:clear');
@@ -61,4 +62,19 @@ it('can nest anonymous repeat', function () {
     BLADE)
         ->toContain('level-1')
         ->toContain('level-2');
+});
+
+it('can change cache store', function () {
+    expectBlade(<<<'BLADE'
+        @repeated('foo', ['{var}' => 'bar'], 'file')
+            foo: {var}
+        @endrepeated
+    BLADE)
+        ->toContain('foo: bar');
+
+    expect(cache()->store('file')->get('foo'))
+        ->toBeInstanceOf(HtmlString::class);
+
+    expect(cache()->store('file')->get('foo')->toHtml())
+        ->toContain('foo: {var}');
 });
