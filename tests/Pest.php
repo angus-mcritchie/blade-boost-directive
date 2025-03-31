@@ -16,7 +16,8 @@ function expectBlade(string $blade, array $data = []): Expectation
         return expect(Blade::render($blade, $data, deleteCachedView: true));
     }
 
-    $component = new class ($blade) extends Component {
+    $component = new class($blade) extends Component
+    {
         protected $template;
 
         public function __construct($template)

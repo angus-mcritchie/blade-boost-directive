@@ -15,7 +15,7 @@ class BladeBoostDirectiveServiceProvider extends PackageServiceProvider
 
     public function packageBooted()
     {
-        Blade::directive('boost', fn(string $expression) => BladeBoostDirective::open($expression));
-        Blade::directive('endboost', fn() => BladeBoostDirective::close());
+        Blade::directive('boost', fn (string $expression) => BladeBoostDirective::open($expression));
+        Blade::directive('endboost', fn () => BladeBoostDirective::close());
     }
 }
