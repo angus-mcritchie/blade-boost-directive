@@ -2,26 +2,18 @@
 
 namespace AngusMcritchie\BladeRepeatedDirective;
 
-use InvalidArgumentException;
-
 class BladeRepeatedDirective
 {
     public static function open(string $expression): string
     {
-        $arguments = array_map('trim', explode(',', $expression));
-        $name = $arguments[0] ?? null;
-        $replacements = $arguments[1] ?? 'null';
-        $store = $arguments[2] ?? "'array'";
-
-        if (! $name) {
-            throw new InvalidArgumentException('The name of the cache key is required.');
-        }
-
         return <<<PHP
             <?php
-                \$__repeatedDirectiveKey = {$name};
-                \$__repeatedDirectiveVariables = {$replacements};
-                \$__repeatedDirectiveStore = {$store};
+                \$__repeatedDirectiveArguments = [{$expression}];
+                if (!(\$__repeatedDirectiveKey = \$__repeatedDirectiveArguments[0] ?? null)) {
+                    throw new \InvalidArgumentException('The name of the cache key is required.');
+                }
+                \$__repeatedDirectiveReplacements = \$__repeatedDirectiveArguments[1] ?? null;
+                \$__repeatedDirectiveStore = \$__repeatedDirectiveArguments[2] ?? 'array';
                 \$__repeatedDirectiveCallback = (function (\$arguments) {
                     return function () use (\$arguments) {
                         extract(\$arguments, EXTR_SKIP);
@@ -36,15 +28,17 @@ class BladeRepeatedDirective
             <?php return new \Illuminate\Support\HtmlString(ob_get_clean()); };
                 })(get_defined_vars());
 
-                if (\$__repeatedDirectiveVariables) {
-                    echo str_replace(array_keys(\$__repeatedDirectiveVariables), \$__repeatedDirectiveVariables, \Illuminate\Support\Facades\Cache::store(\$__repeatedDirectiveStore)->rememberForever(\$__repeatedDirectiveKey, \$__repeatedDirectiveCallback));
+                if (\$__repeatedDirectiveReplacements) {
+                    echo str_replace(array_keys(\$__repeatedDirectiveReplacements), \$__repeatedDirectiveReplacements, \Illuminate\Support\Facades\Cache::store(\$__repeatedDirectiveStore)->rememberForever(\$__repeatedDirectiveKey, \$__repeatedDirectiveCallback));
                 } else {
                     echo \Illuminate\Support\Facades\Cache::store(\$__repeatedDirectiveStore)->rememberForever(\$__repeatedDirectiveKey, \$__repeatedDirectiveCallback);
                 }
 
                 unset(\$__repeatedDirectiveKey);
-                unset(\$__repeatedDirectiveVariables);
+                unset(\$__repeatedDirectiveReplacements);
                 unset(\$__repeatedDirectiveCallback);
+                unset(\$__repeatedDirectiveArguments);
+                unset(\$__repeatedDirectiveStore);
             ?>
         PHP;
     }

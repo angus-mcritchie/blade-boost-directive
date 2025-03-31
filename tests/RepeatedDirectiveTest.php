@@ -28,13 +28,25 @@ it('can repeat with variables', function () {
         ->toContain('Hello, Angus!');
 });
 
+it('can repeat with variables with nested array arguments and 3rd parameter', function () {
+    expectBlade(<<<'BLADE'
+        @foreach(['Angus', 'John'] as $name)
+            @repeated('hello', ['{name}' => $name, '{greeting}' => 'Hello'], 'file')
+                {greeting}, {name}!
+            @endrepeated
+        @endforeach
+    BLADE)
+        ->toContain('Hello, John!')
+        ->toContain('Hello, Angus!');
+});
+
 it('can throw exception when no name provided', function () {
     expectBlade(<<<'BLADE'
         @repeated
             foo
         @endrepeated
     BLADE);
-})->throws(InvalidArgumentException::class);
+})->throws(Illuminate\View\ViewException::class, 'The name of the cache key is required.');
 
 it('can nest named repeat', function () {
     expectBlade(<<<'BLADE'
