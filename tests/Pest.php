@@ -1,6 +1,6 @@
 <?php
 
-use AngusMcritchie\BladeRepeatedDirective\Tests\TestCase;
+use AngusMcritchie\BladeBoostDirective\Tests\TestCase;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Support\Facades\Blade;
@@ -16,8 +16,7 @@ function expectBlade(string $blade, array $data = []): Expectation
         return expect(Blade::render($blade, $data, deleteCachedView: true));
     }
 
-    $component = new class($blade) extends Component
-    {
+    $component = new class ($blade) extends Component {
         protected $template;
 
         public function __construct($template)

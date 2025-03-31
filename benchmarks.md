@@ -1,5 +1,5 @@
 # Benchmarks
-Take these benchmarks with a grain of salt. They are not exhaustive and only serve as a demonstration of the performance improvements you can expect when using the `@repeated` directive.
+Take these benchmarks with a grain of salt. They are not exhaustive and only serve as a demonstration of the performance improvements you can expect when using the `@boost` directive.
 
 ### 100x Flux UI Badges w/ Tooltips
 #### Code
@@ -15,14 +15,14 @@ Benchmark::dd(
                 @endforeach
             BLADE
         ),
-        'repeated' => fn () => Blade::render(
+        'boost' => fn () => Blade::render(
             <<<'BLADE'
                 @foreach (collect()->range(1, 100) as $iteration)
-                    @repeated('new-badge')
+                    @boost('new-badge')
                         <flux:tooltip content="This post was added in the last 24 hours">
                             <flux:badge variant="success" size="sm">New</flux:badge>
                         </flux:tooltip>
-                    @endrepeated('new-badge')
+                    @endboost('new-badge')
                 @endforeach
             BLADE
         ),
@@ -35,7 +35,7 @@ Benchmark::dd(
 | Benchmark | Time (ms) |
 | --------- | --------- |
 | blade     | 15.834ms  |
-| repeated  | 0.737ms   |
+| boost     | 0.737ms   |
 
 ### 500x Flux UI Buttons
 #### Code
@@ -49,12 +49,12 @@ Benchmark::dd(
                 @endforeach
             BLADE
         ),
-        'repeated' => fn () => Blade::render(
+        'boost' => fn () => Blade::render(
             <<<'BLADE'
                 @foreach (collect()->range(1, 500) as $iteration)
-                    @repeated('new-badge')
+                    @boost('new-badge')
                         <flux:badge>My Button</flux:badge>
-                    @endrepeated('new-badge')
+                    @endboost('new-badge')
                 @endforeach
             BLADE
         ),
@@ -67,4 +67,4 @@ Benchmark::dd(
 | Benchmark | Time (ms) |
 | --------- | --------- |
 | blade     | 39.834ms  |
-| repeated  | 2.792ms   |
+| boost     | 2.792ms   |

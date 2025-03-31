@@ -1,29 +1,29 @@
-# Lightning-Fast Blade Components with `@repeated`
+# Lightning-Fast Blade Components with `@boost`
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/angus-mcritchie/blade-repeated-directive.svg?style=flat-square)](https://packagist.org/packages/angus-mcritchie/blade-repeated-directive)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/angus-mcritchie/blade-repeated-directive/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/angus-mcritchie/blade-repeated-directive/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/angus-mcritchie/blade-repeated-directive/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/angus-mcritchie/blade-repeated-directive/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/angus-mcritchie/blade-repeated-directive.svg?style=flat-square)](https://packagist.org/packages/angus-mcritchie/blade-repeated-directive)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/angus-mcritchie/blade-boost-directive.svg?style=flat-square)](https://packagist.org/packages/angus-mcritchie/blade-boost-directive)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/angus-mcritchie/blade-boost-directive/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/angus-mcritchie/blade-boost-directive/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/angus-mcritchie/blade-boost-directive/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/angus-mcritchie/blade-boost-directive/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/angus-mcritchie/blade-boost-directive.svg?style=flat-square)](https://packagist.org/packages/angus-mcritchie/blade-boost-directive)
 
-Adds a `@repeated` Blade directive to your Laravel application. Only speed up performance if you're rendering the same component multiple times as it renders the component once and caches the output. Then does a simple `str_replace` for any variables passed to the directive (optional).
+Adds a `@boost` Blade directive to your Laravel application. Only speed up performance if you're rendering the same component multiple times as it renders the component once and caches the output. Then does a simple `str_replace` for any variables passed to the directive (optional).
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require angus-mcritchie/blade-repeated-directive
+composer require angus-mcritchie/blade-boost-directive
 ```
 
 ## Usage
-The `@repeated` directive can be used to wrap any Blade component. It will render the component once and cache the output. Then it will replace any variables passed to the directive.
+The `@boost` directive can be used to wrap any Blade component. It will render the component once and cache the output. Then it will replace any variables passed to the directive.
 This is very useful if you're rendering many of the same components in a loop or if you're rendering the same component multiple times in a view.
 
 ### Signature
 ```blade
-@repeated(string $name, array $variables = [])
+@boost(string $name, array $variables = [])
     <x-component />
-@endrepeated
+@endboost
 ```
 
 ### Without Variables
@@ -31,57 +31,57 @@ You can still get excellent performace improvments for components that don't use
 
 ```blade
 @foreach($posts as $post)
-    @repeated('post-card')
+    @boost('post-card')
         <x-post.card />
-    @endrepeated
+    @endboost
 @endforeach
 ```
 
 ### With Variables
-You can pass variables to the `@repeated` directive. The variables will be replaced in the output of the component.
+You can pass variables to the `@boost` directive. The variables will be replaced in the output of the component.
 
 ```blade
 @foreach($posts as $post)
-    @repeated('post-card', ['{name}' => $post->name, '{url}' => route('post.show', $post)])
+    @boost('post-card', ['{name}' => $post->name, '{url}' => route('post.show', $post)])
         <x-post.card name="{name}" href="{url}" />
-    @endrepeated
+    @endboost
 @endforeach
 ```
 
 ### Non-Component Usage
-You can also use the `@repeated` directive with any Blade code, including multiple components.
+You can also use the `@boost` directive with any Blade code, including multiple components.
 
 ```blade
 @foreach($products as $product)
-    @repeated('product-card-links', ['{id}' => $product->id, '{url}' => route('product.show', $product)])
+    @boost('product-card-links', ['{id}' => $product->id, '{url}' => route('product.show', $product)])
         <x-product.add-button id="{id}" />
         <x-product.view-button href="{url}" />
         <x-product.wishlist-button id="{id}" />
         <x-product.compare-button id="{id}" />
-    @endrepeated
+    @endboost
 @endforeach
 ```
 
 ### Cache Store
-We use the `array` cache store by default. This is the fastest cache store available but is not persistent. If you want to use a persistent cache store you can add a third argument to the `@repeated` directive.
+We use the `array` cache store by default. This is the fastest cache store available but is not persistent. If you want to use a persistent cache store you can add a third argument to the `@boost` directive.
 
 ```blade
 @reapeated('footer', ['{year}' => date('Y')], 'file')
     <x-footer />
-@endrepeated
+@endboost
 ```
 
 ```blade
-@repeated('header', ['{login_url}' => auth()->check() ? route('account') : route('login')], 'file')
+@boost('header', ['{login_url}' => auth()->check() ? route('account') : route('login')], 'file')
     <x-header />
-@endrepeated
+@endboost
 ```
 
 Now, each time the page is loaded, the pre-rendered components will be stored in the `file` cache store. This is useful if you want to speed up large, but simple components that are used on every page and only rendered once.
 
 
 ## Benchmarks
-Our [benchmarks](./benchmarks.md) show the performance improvements you can expect when using the `@repeated` directive. The benchmarks are not exhaustive and only serve as a demonstration of the performance improvements you can expect.
+Our [benchmarks](./benchmarks.md) show the performance improvements you can expect when using the `@boost` directive. The benchmarks are not exhaustive and only serve as a demonstration of the performance improvements you can expect.
 
 ## Testing
 

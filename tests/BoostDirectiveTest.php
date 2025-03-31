@@ -9,9 +9,9 @@ beforeEach(function () {
 
 it('can repeat without variables', function () {
     expectBlade(<<<'BLADE'
-        @repeated('foo')
+        @boost('foo')
             foo
-        @endrepeated
+        @endboost
     BLADE)
         ->toContain('foo');
 });
@@ -19,9 +19,9 @@ it('can repeat without variables', function () {
 it('can repeat with variables', function () {
     expectBlade(<<<'BLADE'
         @foreach(['Angus', 'John'] as $name)
-            @repeated('hello', ['{name}' => $name])
+            @boost('hello', ['{name}' => $name])
                 Hello, {name}!
-            @endrepeated
+            @endboost
         @endforeach
     BLADE)
         ->toContain('Hello, John!')
@@ -31,9 +31,9 @@ it('can repeat with variables', function () {
 it('can repeat with variables with nested array arguments and 3rd parameter', function () {
     expectBlade(<<<'BLADE'
         @foreach(['Angus', 'John'] as $name)
-            @repeated('hello', ['{name}' => $name, '{greeting}' => 'Hello'], 'file')
+            @boost('hello', ['{name}' => $name, '{greeting}' => 'Hello'], 'file')
                 {greeting}, {name}!
-            @endrepeated
+            @endboost
         @endforeach
     BLADE)
         ->toContain('Hello, John!')
@@ -42,21 +42,21 @@ it('can repeat with variables with nested array arguments and 3rd parameter', fu
 
 it('can throw exception when no name provided', function () {
     expectBlade(<<<'BLADE'
-        @repeated
+        @boost
             foo
-        @endrepeated
+        @endboost
     BLADE);
 })->throws(Illuminate\View\ViewException::class, 'The name of the cache key is required.');
 
 it('can nest named repeat', function () {
     expectBlade(<<<'BLADE'
-        @repeated('level-1')
+        @boost('level-1')
             level-1
 
-            @repeated('level-2')
+            @boost('level-2')
                 level-2
-            @endrepeated
-        @endrepeated
+            @endboost
+        @endboost
     BLADE)
         ->toContain('level-1')
         ->toContain('level-2');
@@ -64,13 +64,13 @@ it('can nest named repeat', function () {
 
 it('can nest anonymous repeat', function () {
     expectBlade(<<<'BLADE'
-        @repeated('level-1-and-2')
+        @boost('level-1-and-2')
             level-1
 
-            @repeated('level-2')
+            @boost('level-2')
                 level-2
-            @endrepeated
-        @endrepeated
+            @endboost
+        @endboost
     BLADE)
         ->toContain('level-1')
         ->toContain('level-2');
@@ -78,9 +78,9 @@ it('can nest anonymous repeat', function () {
 
 it('can change cache store', function () {
     expectBlade(<<<'BLADE'
-        @repeated('foo', ['{var}' => 'bar'], 'file')
+        @boost('foo', ['{var}' => 'bar'], 'file')
             foo: {var}
-        @endrepeated
+        @endboost
     BLADE)
         ->toContain('foo: bar');
 

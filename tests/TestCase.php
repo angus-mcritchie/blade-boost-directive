@@ -1,8 +1,8 @@
 <?php
 
-namespace AngusMcritchie\BladeRepeatedDirective\Tests;
+namespace AngusMcritchie\BladeBoostDirective\Tests;
 
-use AngusMcritchie\BladeRepeatedDirective\BladeRepeatedDirectiveServiceProvider;
+use AngusMcritchie\BladeBoostDirective\BladeBoostDirectiveServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -13,14 +13,14 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'AngusMcritchie\\BladeRepeatedDirective\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn(string $modelName) => 'AngusMcritchie\\BladeBoostDirective\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            BladeRepeatedDirectiveServiceProvider::class,
+            BladeBoostDirectiveServiceProvider::class,
         ];
     }
 
