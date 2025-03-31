@@ -5,7 +5,7 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/angus-mcritchie/blade-boost-directive/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/angus-mcritchie/blade-boost-directive/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/angus-mcritchie/blade-boost-directive.svg?style=flat-square)](https://packagist.org/packages/angus-mcritchie/blade-boost-directive)
 
-Adds a `@boost` Blade directive to your Laravel application. Only speed up performance if you're rendering the same component multiple times as it renders the component once and caches the output. Then does a simple `str_replace` for any variables passed to the directive (optional).
+Adds a `@boost` Blade directive to your Laravel application. Caches the HTML rendered from Blade code. Optionally you can perform a simple `str_replace` for any variables passed to the directive.
 
 ## Installation
 
@@ -16,68 +16,159 @@ composer require angus-mcritchie/blade-boost-directive
 ```
 
 ## Usage
-The `@boost` directive can be used to wrap any Blade component. It will render the component once and cache the output. Then it will replace any variables passed to the directive.
-This is very useful if you're rendering many of the same components in a loop or if you're rendering the same component multiple times in a view.
+The `@boost` directive can be used to wrap any Blade code. It will render the blade code once and cache the HTML and can optionally replace any variables passed to the directive via the second argument.
+
 
 ### Signature
 ```blade
-@boost(string $name, array $variables = [])
+@boost(string $name, array $variables = [], string $store = 'array')
     <x-component />
 @endboost
 ```
 
-### Without Variables
-You can still get excellent performace improvments for components that don't use any variables.
+### Repeating Code Use Case
+A common use case would be that you're rendering a page with 30 `<x-post.card />` components which looks like this:
 
 ```blade
 @foreach($posts as $post)
-    @boost('post-card')
-        <x-post.card />
-    @endboost
+    <x-card>
+        <x-link href="{{ route('post.show', $post) }}">
+            <x-image src="{{ $post->image }}" />
+        </x-link>
+        <x-card.body>
+            <x-heading as="h3">{{ $post->title }}</x-heading>
+            <x-text>{{ $post->description }}</x-text>
+        </x-card.body>
+        <x-badge class="absolute top-0 left-0">{{ $post->author }}</x-badge>
+        <x-card.footer>
+            <x-button href="{{ route('post.show', $post) }}">
+                Read More
+            </x-button>
+        </x-card.footer>
+    </x-card>
 @endforeach
 ```
 
-### With Variables
-You can pass variables to the `@boost` directive. The variables will be replaced in the output of the component.
+That is a total of 9 components per post, which is 270 components in total and there are only 4 variables for the whole card.
+Let's see how we can use the `@boost` directive to speed this up.
 
 ```blade
 @foreach($posts as $post)
-    @boost('post-card', ['{name}' => $post->name, '{url}' => route('post.show', $post)])
-        <x-post.card name="{name}" href="{url}" />
+    @boost('post-card', [
+        '{name}' => $post->name,
+        '{url}' => route('post.show', $post),
+        '{image}' => $post->image,
+        '{author}' => $post->author,
+        '{description}' => $post->description
+    ])
+        <x-card>
+            <x-link href="{url}">
+                <x-image src="{image}" />
+            </x-link>
+            <x-card.body>
+                <x-heading as="h3">{title}</x-heading>
+                <x-text>{description}</x-text>
+            </x-card.body>
+            <x-badge class="absolute top-0 left-0">{author}</x-badge>
+            <x-card.footer>
+                <x-button href="{url}">
+                    Read More
+                </x-button>
+            </x-card.footer>
+        </x-card>
     @endboost
 @endforeach
 ```
 
-### Non-Component Usage
-You can also use the `@boost` directive with any Blade code, including multiple components.
+Wrapping the whole component in the `@boost` directive will store the HTML in the cache, then replace the passed variables with the values from the `$post` object and result in Blade only rendering a single component instead of 270.
+
+### Large Component Use Case
+Another common use case would be that you're rendering a page with a single components with many smaller other components.
 
 ```blade
-@foreach($products as $product)
-    @boost('product-card-links', ['{id}' => $product->id, '{url}' => route('product.show', $product)])
-        <x-product.add-button id="{id}" />
-        <x-product.view-button href="{url}" />
-        <x-product.wishlist-button id="{id}" />
-        <x-product.compare-button id="{id}" />
-    @endboost
-@endforeach
+<x-footer>
+    <x-grid cols="4">
+        <x-grid.item>
+            <x-link href="{{ route('home') }}">
+                <x-image src="{{ asset('images/logo.png') }}" />
+            </x-link>
+        </x-grid.item>
+        <x-grid.item>
+        <x-list>
+            <x-list.item>
+                <x-link href="{{ route('home') }}">
+                    Home
+                </x-link>
+            </x-list.item>
+            <x-list.item>
+                <x-link href="{{ route('about') }}">
+                    About
+                </x-link>
+            </x-list.item>
+            <x-list.item>
+                <x-link href="{{ route('contact') }}">
+                    Contact
+                </x-link>
+            </x-list.item>
+        </x-list>
+        <!-- more columns, links etc -->
+        </x-grid.item>
+    </x-grid>
+    <div class="text-center">
+        <x-text>
+            &copy; {{ date('Y') }} My Company
+        </x-text>
+    </div>
+</x-footer>
 ```
 
-### Cache Store
-We use the `array` cache store by default. This is the fastest cache store available but is not persistent. If you want to use a persistent cache store you can add a third argument to the `@boost` directive.
+To speed this up we can use the `@boost` directive to cache the HTML for the footer and only render it once.
+By default, @boost uses the `array` cache store, which is the fastest cache store available but is not persistent, this use case you'll want to use the `file` cache store.
+You can do this by passing a third argument to the `@boost` directive.
 
+Let's see how we can use the `@boost` directive to speed this up.
 ```blade
-@reapeated('footer', ['{year}' => date('Y')], 'file')
-    <x-footer />
+@boost('footer', ['{year}' => date('Y')], 'file')
+    <x-footer>
+        <x-grid cols="4">
+            <x-grid.item>
+                <x-link href="{{ route('home') }}">
+                    <x-image src="{{ asset('images/logo.png') }}" />
+                </x-link>
+            </x-grid.item>
+            <x-grid.item>
+            <x-list>
+                <x-list.item>
+                    <x-link href="{{ route('home') }}">
+                        Home
+                    </x-link>
+                </x-list.item>
+                <x-list.item>
+                    <x-link href="{{ route('about') }}">
+                        About
+                    </x-link>
+                </x-list.item>
+                <x-list.item>
+                    <x-link href="{{ route('contact') }}">
+                        Contact
+                    </x-link>
+                </x-list.item>
+            </x-list>
+            <!-- more columns, links etc -->
+            </x-grid.item>
+        </x-grid>
+        <div class="text-center">
+            <x-text>
+                &copy; {year} My Company
+            </x-text>
+        </div>
+    </x-footer>
 @endboost
 ```
 
-```blade
-@boost('header', ['{login_url}' => auth()->check() ? route('account') : route('login')], 'file')
-    <x-header />
-@endboost
-```
+Now, Blade will just render this component once and store the HTML in the cache. The next time the page is loaded, the pre-rendered component will be stored in the `file` cache store. This is useful if you want to speed up large, but simple components that are used on every page and only rendered once.
 
-Now, each time the page is loaded, the pre-rendered components will be stored in the `file` cache store. This is useful if you want to speed up large, but simple components that are used on every page and only rendered once.
+Mind you that the `@boost` directive will use the `Cache::rememberForever()` under the hood so it's up to you to clear the cache when you make changes to the component.
 
 
 ## Benchmarks
