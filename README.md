@@ -62,6 +62,24 @@ You can also use the `@repeated` directive with any Blade code, including multip
 @endforeach
 ```
 
+### Cache Store
+We use the `array` cache store by default. This is the fastest cache store available but is not persistent. If you want to use a persistent cache store you can add a third argument to the `@repeated` directive.
+
+```blade
+@reapeated('footer', ['{year}' => date('Y')], 'file')
+    <x-footer />
+@endrepeated
+```
+
+```blade
+@repeated('header', ['{login_url}' => auth()->check() ? route('account') : route('login')], 'file')
+    <x-header />
+@endrepeated
+```
+
+Now, each time the page is loaded, the pre-rendered components will be stored in the `file` cache store. This is useful if you want to speed up large, but simple components that are used on every page and only rendered once.
+
+
 ## Benchmarks
 Our [benchmarks](./benchmarks.md) show the performance improvements you can expect when using the `@repeated` directive. The benchmarks are not exhaustive and only serve as a demonstration of the performance improvements you can expect.
 
