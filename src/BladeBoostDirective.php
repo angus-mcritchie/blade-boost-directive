@@ -12,6 +12,7 @@ class BladeBoostDirective
                 if (!(\$__boostDirectiveKey = \$__boostDirectiveArguments[0] ?? null)) {
                     throw new \InvalidArgumentException('The name of the cache key is required.');
                 }
+                \$__boostDirectiveKey = 'blade-boost-directive.' . \$__boostDirectiveKey;
                 \$__boostDirectiveReplacements = \$__boostDirectiveArguments[1] ?? null;
                 \$__boostDirectiveStore = \$__boostDirectiveArguments[2] ?? 'array';
                 \$__boostDirectiveCallback = (fn(array \$__boostDirectiveArguments) => function () use (\$__boostDirectiveArguments) {
@@ -43,5 +44,15 @@ class BladeBoostDirective
                 );
             ?>
         PHP;
+    }
+
+    public static function forget(string $key, string $store = 'array'): bool
+    {
+        return \Illuminate\Support\Facades\Cache::store($store)->forget("blade-boost-directive.$key");
+    }
+
+    public static function clear(string $store = 'array'): bool
+    {
+        return \Illuminate\Support\Facades\Cache::store($store)->forget('blade-boost-directive');
     }
 }
