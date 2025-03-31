@@ -14,10 +14,9 @@ class BladeBoostDirective
                 }
                 \$__boostDirectiveReplacements = \$__boostDirectiveArguments[1] ?? null;
                 \$__boostDirectiveStore = \$__boostDirectiveArguments[2] ?? 'array';
-                \$__boostDirectiveCallback = (function (\$arguments) {
-                    return function () use (\$arguments) {
-                        extract(\$arguments, EXTR_SKIP);
-                        ob_start();
+                \$__boostDirectiveCallback = (fn(array \$__boostDirectiveArguments) => function () use (\$__boostDirectiveArguments) {
+                    extract(\$__boostDirectiveArguments, EXTR_SKIP);
+                    ob_start();
             ?>
         PHP;
     }
@@ -25,7 +24,8 @@ class BladeBoostDirective
     public static function close(): string
     {
         return <<<PHP
-            <?php return new \Illuminate\Support\HtmlString(ob_get_clean()); };
+            <?php
+                    return new \Illuminate\Support\HtmlString(ob_get_clean());
                 })(get_defined_vars());
 
                 if (\$__boostDirectiveReplacements) {
@@ -34,11 +34,13 @@ class BladeBoostDirective
                     echo \Illuminate\Support\Facades\Cache::store(\$__boostDirectiveStore)->rememberForever(\$__boostDirectiveKey, \$__boostDirectiveCallback);
                 }
 
-                unset(\$__boostDirectiveKey);
-                unset(\$__boostDirectiveReplacements);
-                unset(\$__boostDirectiveCallback);
-                unset(\$__boostDirectiveArguments);
-                unset(\$__boostDirectiveStore);
+                unset(
+                    \$__boostDirectiveKey,
+                    \$__boostDirectiveReplacements,
+                    \$__boostDirectiveCallback,
+                    \$__boostDirectiveArguments,
+                    \$__boostDirectiveStore
+                );
             ?>
         PHP;
     }
