@@ -27,7 +27,7 @@ The `@boost` directive can be used to wrap any Blade code. It will render the bl
 ```
 
 ### Repeating Code Use Case
-A common use case would be that you're rendering a page with 30 `<x-post.card />` components which looks like this:
+A common use case would be that you're rendering a page of `<x-post.card />` components which looks like this:
 
 ```blade
 @foreach($posts as $post)
@@ -49,7 +49,8 @@ A common use case would be that you're rendering a page with 30 `<x-post.card />
 @endforeach
 ```
 
-That is a total of 9 components per post, which is 270 components in total and there are only 4 variables for the whole card.
+That is a total of 9 components per post, if we have 30 per page, that is 270 components in total and there are only 4 variables for the whole card.
+
 Let's see how we can use the `@boost` directive to speed this up.
 
 ```blade
@@ -80,7 +81,9 @@ Let's see how we can use the `@boost` directive to speed this up.
 @endforeach
 ```
 
-Wrapping the whole component in the `@boost` directive will store the HTML in the cache, then replace the passed variables with the values from the `$post` object and result in Blade only rendering a single component instead of 270.
+Wrapping the whole component in the `@boost` directive will store the HTML in the cache, then replace the passed variables with the values from the `$post` object and result in Blade only rendering **a single component instead of 270** 🚀.
+
+You could use the `file` cache store and render zero components (after the first request) but you'll need to clear the cache when you make changes to the component.
 
 ### Large Component Use Case
 Another common use case would be that you're rendering a page with a single components with many smaller other components.
