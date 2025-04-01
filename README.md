@@ -173,6 +173,36 @@ Now, Blade will just render this component once and store the HTML in the cache.
 
 Mind you that the `@boost` directive will use the `Cache::rememberForever()` under the hood so it's up to you to clear the cache when you make changes to the component.
 
+## Configuration
+You can publish the configuration file with the following command:
+
+```bash
+php artisan vendor:publish --tag="blade-boost-directive-config"
+```
+This is the contents of the published config file:
+
+```php
+return [
+
+    /**
+     * Enable or disable the package.
+     * If disabled, the package will not register any Blade directives.
+     */
+    'enabled' => env('BLADE_BOOST_ENABLED', true),
+
+    /**
+     * The default cache store to use.
+     * This is used when no cache store is specified in the directive.
+     */
+    'default_cache_store' => env('BLADE_BOOST_DIRECTIVE_DEFAULT_CACHE_STORE', 'array'),
+
+    /**
+     * The prefix to use for cache keys.
+     * This is used to avoid key collisions with other packages or parts of your application.
+     */
+    'prefix' => env('BLADE_BOOST_DIRECTIVE_PREFIX', 'blade-boost-directive.'),
+];
+```
 
 ## Benchmarks
 Our [benchmarks](./benchmarks.md) show the performance improvements you can expect when using the `@boost` directive. The benchmarks are not exhaustive and only serve as a demonstration of the performance improvements you can expect.
