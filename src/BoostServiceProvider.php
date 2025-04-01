@@ -16,13 +16,14 @@ class BoostServiceProvider extends PackageServiceProvider
 
     public function packageBooted()
     {
-        if (!config()->get('blade-boost-directive.enabled')) {
-            Blade::directive('boost', fn() => null);
-            Blade::directive("endboost", fn() => null);
+        if (! config()->get('blade-boost-directive.enabled')) {
+            Blade::directive('boost', fn () => null);
+            Blade::directive('endboost', fn () => null);
+
             return;
         }
 
-        Blade::directive('boost', fn(string $expression) => Boost::open($expression));
-        Blade::directive("endboost", fn() => Boost::close());
+        Blade::directive('boost', fn (string $expression) => Boost::open($expression));
+        Blade::directive('endboost', fn () => Boost::close());
     }
 }
