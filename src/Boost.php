@@ -2,7 +2,7 @@
 
 namespace AngusMcritchie\BladeBoostDirective;
 
-class BladeBoostDirective
+class Boost
 {
     public static function open(string $expression): string
     {
@@ -12,9 +12,9 @@ class BladeBoostDirective
                 if (!(\$__boostDirectiveKey = \$__boostDirectiveArguments[0] ?? null)) {
                     throw new \InvalidArgumentException('The name of the cache key is required.');
                 }
-                \$__boostDirectiveKey = 'blade-boost-directive.' . \$__boostDirectiveKey;
+                \$__boostDirectiveKey = \AngusMcritchie\BladeBoostDirective\Boost::prefix(\$__boostDirectiveKey);
                 \$__boostDirectiveReplacements = \$__boostDirectiveArguments[1] ?? null;
-                \$__boostDirectiveStore = \$__boostDirectiveArguments[2] ?? 'array';
+                \$__boostDirectiveStore = \$__boostDirectiveArguments[2] ?? config()->get('blade-boost-directive.default_cache_store');
                 \$__boostDirectiveCallback = (fn(array \$__boostDirectiveArguments) => function () use (\$__boostDirectiveArguments) {
                     extract(\$__boostDirectiveArguments, EXTR_SKIP);
                     ob_start();
@@ -46,13 +46,8 @@ class BladeBoostDirective
         PHP;
     }
 
-    public static function forget(string $key, string $store = 'array'): bool
+    public static function prefix(string $key): string
     {
-        return \Illuminate\Support\Facades\Cache::store($store)->forget("blade-boost-directive.$key");
-    }
-
-    public static function clear(string $store = 'array'): bool
-    {
-        return \Illuminate\Support\Facades\Cache::store($store)->forget('blade-boost-directive');
+        return config('blade-boost-directive.prefix') . $key;
     }
 }

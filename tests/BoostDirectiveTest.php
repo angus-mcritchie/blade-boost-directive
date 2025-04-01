@@ -1,10 +1,14 @@
 <?php
 
+use AngusMcritchie\BladeBoostDirective\Boost;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\HtmlString;
 
 beforeEach(function () {
     Artisan::call('view:clear');
+    Cache::store('array')->flush();
+    Cache::store('file')->flush();
 });
 
 it('can repeat without variables', function () {
@@ -13,6 +17,27 @@ it('can repeat without variables', function () {
             foo
         @endboost
     BLADE)
+        ->toContain('foo');
+});
+
+it('can update default cache store', function () {
+
+    $key = Boost::prefix('foo');
+    $cache = Cache::store('file');
+
+    config()->set('blade-boost-directive.default_cache_store', 'file');
+
+    expectBlade(<<<'BLADE'
+        @boost('foo')
+            foo
+        @endboost
+    BLADE)
+        ->toContain('foo');
+
+    expect($cache->get($key))
+        ->toBeInstanceOf(HtmlString::class);
+
+    expect($cache->get($key)->toHtml())
         ->toContain('foo');
 });
 
@@ -77,6 +102,10 @@ it('can nest anonymous repeat', function () {
 });
 
 it('can change cache store', function () {
+
+    $key = Boost::prefix('foo');
+    $cache = Cache::store('file');
+
     expectBlade(<<<'BLADE'
         @boost('foo', ['{var}' => 'bar'], 'file')
             foo: {var}
@@ -84,9 +113,46 @@ it('can change cache store', function () {
     BLADE)
         ->toContain('foo: bar');
 
-    expect(cache()->store('file')->get('foo'))
+    expect($cache->get($key))
         ->toBeInstanceOf(HtmlString::class);
 
-    expect(cache()->store('file')->get('foo')->toHtml())
+    expect($cache->get($key)->toHtml())
         ->toContain('foo: {var}');
+});
+
+it('can clear cache', function () {
+
+    $key = Boost::prefix('foo');
+    $cache = Cache::store('array');
+
+    expectBlade(<<<'BLADE'
+        @boost('foo', ['{var}' => 'bar'], 'array')
+            foo: {var}
+        @endboost
+    BLADE)
+        ->toContain('foo: bar');
+
+    expect($cache->get($key))
+        ->toBeInstanceOf(HtmlString::class);
+
+    expect($cache->get($key)->toHtml())
+        ->toContain('foo: {var}');
+
+    $cache->forget($key);
+
+    expect($cache->get($key))
+        ->toBeNull();
+
+    expectBlade(<<<'BLADE'
+        @boost('foo', ['{var}' => 'bar'], 'array')
+            foo, but different: {var}
+        @endboost
+    BLADE)
+        ->toContain('foo, but different: bar');
+
+    expect($cache->get($key))
+        ->toBeInstanceOf(HtmlString::class);
+
+    expect($cache->get($key)->toHtml())
+        ->toContain('foo, but different: {var}');
 });
