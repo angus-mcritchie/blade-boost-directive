@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\HtmlString;
 
 beforeEach(function () {
-    // Artisan::call('view:clear');
+    Artisan::call('view:clear');
     Cache::store('array')->flush();
     Cache::store('file')->flush();
 });
