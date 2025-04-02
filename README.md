@@ -7,6 +7,26 @@
 
 Adds a `@boost` Blade directive to your Laravel application. Caches the HTML rendered from Blade code. Optionally you can perform a simple [`str_replace`](https://www.php.net/manual/en/function.str-replace.php) for any variables passed to the directive.
 
+## Table of Contents
+- [Installation](#installation)
+- [Signature](#signature)
+- [Parameters](#parameters)
+- [Usage](#usage)
+  - [Repeating Code Use Case](#repeating-code-use-case)
+  - [But I Have an `if` Statment in There!](#but-i-have-an-if-statement-in-there)
+  - [Large Component Use Case](#large-component-use-case)
+  - [Simple Small Repeating Use Case](#simple-small-repeating-use-case)
+- [Escaping](#escaping)
+- [Cache Store](#cache-store)
+- [Configuration](#configuration)
+- [Benchmarks](#benchmarks)
+- [Testing](#testing)
+- [Changelog](#changelog)
+- [Contributing](#contributing)
+- [Security Vulnerabilities](#security-vulnerabilities)
+- [Credits](#credits)
+- [License](#license)
+
 ## Installation
 
 You can install the package via composer:
@@ -106,7 +126,7 @@ Wrapping the whole component in the `@boost` directive will store the HTML in th
 
 You could use the `file` cache store and render zero components (after the first request) but you'll need to clear the cache when you make changes to the component.
 
-### But I Have an `if` Statment in There!
+### But I Have an `if` Statement in There!
 
 If you want to conditionally show the badge, you'll want to update the key to include the condition so that the cache is different for each condition.
 
