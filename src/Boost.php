@@ -4,6 +4,12 @@ namespace AngusMcritchie\BladeBoostDirective;
 
 class Boost
 {
+    /**
+     * Generates the opening PHP code for the boost directive.
+     *
+     * @param  string  $expression  The expression passed to the @boost directive
+     * @return string The generated PHP code
+     */
     public static function open(string $expression): string
     {
         return <<<PHP
@@ -50,6 +56,11 @@ class Boost
         PHP;
     }
 
+    /**
+     * Generates the closing PHP code for the boost directive.
+     *
+     * @return string The generated PHP code
+     */
     public static function close(): string
     {
         return <<<PHP
@@ -73,6 +84,12 @@ class Boost
         PHP;
     }
 
+    /**
+     * Prefixes the cache key with the configured prefix.
+     *
+     * @param  string  $key  The original cache key
+     * @return string The prefixed cache key
+     */
     public static function prefix(string $key): string
     {
         return config('blade-boost-directive.prefix').$key;
