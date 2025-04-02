@@ -251,7 +251,7 @@ The `@boost` directive will escape the HTML by default using [Laravel's e() func
 @boost([
     'key' => 'raw-html',
     'replace' => [
-        '{foor}' => 'bar'
+        '{foo}' => 'bar'
     ],
     'raw' => true
 ])
