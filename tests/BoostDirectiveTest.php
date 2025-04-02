@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\HtmlString;
 
 beforeEach(function () {
-    Artisan::call('view:clear');
+    // Artisan::call('view:clear');
     Cache::store('array')->flush();
     Cache::store('file')->flush();
 });
@@ -14,10 +14,10 @@ beforeEach(function () {
 it('can repeat without variables', function () {
     expectBlade(<<<'BLADE'
         @boost('foo')
-            foo
+            bar
         @endboost
     BLADE)
-        ->toContain('foo');
+        ->toContain('bar');
 });
 
 it('can update default cache store', function () {
@@ -29,67 +29,67 @@ it('can update default cache store', function () {
 
     expectBlade(<<<'BLADE'
         @boost('foo')
-            foo
+            bar
         @endboost
     BLADE)
-        ->toContain('foo');
+        ->toContain('bar');
 
     expect($cache->get($key))
         ->toBeInstanceOf(HtmlString::class);
 
     expect($cache->get($key)->toHtml())
-        ->toContain('foo');
+        ->toContain('bar');
 });
 
 it('can repeat with variables', function () {
     expectBlade(<<<'BLADE'
-        @foreach(['Angus', 'John'] as $name)
-            @boost('hello', ['{name}' => $name])
-                Hello, {name}!
+        @foreach(['foo', 'bar'] as $value)
+            @boost('foo', ['replace' => ['{value}' => $value]])
+                key: {value}
             @endboost
         @endforeach
     BLADE)
-        ->toContain('Hello, John!')
-        ->toContain('Hello, Angus!');
+        ->toContain('key: foo')
+        ->toContain('key: bar');
 });
 
-it('can repeat with variables with nested array arguments and 3rd parameter', function () {
+it('can replace with escape', function () {
     expectBlade(<<<'BLADE'
-        @foreach(['Angus', 'John'] as $name)
-            @boost('hello', ['{name}' => $name, '{greeting}' => 'Hello'], 'file')
-                {greeting}, {name}!
-            @endboost
-        @endforeach
+        @boost('foo', ['replace' => ['{value}' => html_entity_decode('&lt;script&gt;alert(1)&lt;/script&gt;')]])
+            key: {value}
+        @endboost
     BLADE)
-        ->toContain('Hello, John!')
-        ->toContain('Hello, Angus!');
+        ->toContain('key: &lt;script&gt;alert(1)&lt;/script&gt;');
 });
 
-it('can throw exception when no name provided', function () {
+it('can replace with raw html', function () {
+    expectBlade(<<<'BLADE'
+        @boost('foo', ['raw' => true, 'replace' => ['{value}' => html_entity_decode('&lt;script&gt;alert(1)&lt;/script&gt;')]])
+            key: {value}
+        @endboost
+    BLADE)
+        ->toContain('key: '.html_entity_decode('&lt;script&gt;alert(1)&lt;/script&gt;'));
+});
+
+it('can throw exception when no arguments provided', function () {
     expectBlade(<<<'BLADE'
         @boost
             foo
         @endboost
     BLADE);
-})->throws(Illuminate\View\ViewException::class, 'The name of the cache key is required.');
+})->throws(Exception::class, '@boost directive requires `key` to be defined');
 
-it('can nest named repeat', function () {
+it('can throw exception when missing key argument', function () {
+    expectBlade(<<<'BLADE'
+        @boost(['replace' => ['{key}' => 'value']])
+            foo: {key}
+        @endboost
+    BLADE);
+})->throws(Exception::class, '@boost directive requires `key` to be defined');
+
+it('can nest boost', function () {
     expectBlade(<<<'BLADE'
         @boost('level-1')
-            level-1
-
-            @boost('level-2')
-                level-2
-            @endboost
-        @endboost
-    BLADE)
-        ->toContain('level-1')
-        ->toContain('level-2');
-});
-
-it('can nest anonymous repeat', function () {
-    expectBlade(<<<'BLADE'
-        @boost('level-1-and-2')
             level-1
 
             @boost('level-2')
@@ -107,17 +107,17 @@ it('can change cache store', function () {
     $cache = Cache::store('file');
 
     expectBlade(<<<'BLADE'
-        @boost('foo', ['{var}' => 'bar'], 'file')
-            foo: {var}
+        @boost('foo', ['store' => 'file'])
+            foo
         @endboost
     BLADE)
-        ->toContain('foo: bar');
+        ->toContain('foo');
 
     expect($cache->get($key))
         ->toBeInstanceOf(HtmlString::class);
 
     expect($cache->get($key)->toHtml())
-        ->toContain('foo: {var}');
+        ->toContain('foo');
 });
 
 it('can clear cache', function () {
@@ -126,8 +126,8 @@ it('can clear cache', function () {
     $cache = Cache::store('array');
 
     expectBlade(<<<'BLADE'
-        @boost('foo', ['{var}' => 'bar'], 'array')
-            foo: {var}
+        @boost('foo', ['replace' => ['{value}' => 'bar']])
+            foo: {value}
         @endboost
     BLADE)
         ->toContain('foo: bar');
@@ -136,7 +136,7 @@ it('can clear cache', function () {
         ->toBeInstanceOf(HtmlString::class);
 
     expect($cache->get($key)->toHtml())
-        ->toContain('foo: {var}');
+        ->toContain('foo: {value}');
 
     $cache->forget($key);
 
@@ -144,8 +144,8 @@ it('can clear cache', function () {
         ->toBeNull();
 
     expectBlade(<<<'BLADE'
-        @boost('foo', ['{var}' => 'bar'], 'array')
-            foo, but different: {var}
+        @boost('foo', ['replace' => ['{value}' => 'bar']])
+            foo, but different: {value}
         @endboost
     BLADE)
         ->toContain('foo, but different: bar');
@@ -154,5 +154,22 @@ it('can clear cache', function () {
         ->toBeInstanceOf(HtmlString::class);
 
     expect($cache->get($key)->toHtml())
-        ->toContain('foo, but different: {var}');
+        ->toContain('foo, but different: {value}');
+});
+
+it('can execute readme examples', function () {
+    expectBlade(<<<'BLADE'
+        @foreach(['Post 1', 'Post 2'] as $title)
+            @boost([
+                'key' => 'post-card',
+                'replace' => [
+                    '{title}' => $title
+                ]
+            ])
+                <div>{title}<div>
+            @endboost
+        @endforeach
+    BLADE)
+        ->toContain('Post 1')
+        ->toContain('Post 2');
 });

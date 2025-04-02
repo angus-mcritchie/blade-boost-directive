@@ -5,7 +5,7 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/angus-mcritchie/blade-boost-directive/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/angus-mcritchie/blade-boost-directive/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/angus-mcritchie/blade-boost-directive.svg?style=flat-square)](https://packagist.org/packages/angus-mcritchie/blade-boost-directive)
 
-Adds a `@boost` Blade directive to your Laravel application. Caches the HTML rendered from Blade code. Optionally you can perform a simple `str_replace` for any variables passed to the directive.
+Adds a `@boost` Blade directive to your Laravel application. Caches the HTML rendered from Blade code. Optionally you can perform a simple [`str_replace`](https://www.php.net/manual/en/function.str-replace.php) for any variables passed to the directive.
 
 ## Installation
 
@@ -15,16 +15,33 @@ You can install the package via composer:
 composer require angus-mcritchie/blade-boost-directive
 ```
 
-## Usage
-The `@boost` directive can be used to wrap any Blade code. It will render the blade code once and cache the HTML and can optionally replace any variables passed to the directive via the second argument.
 
-
-### Signature
+## Signature
 ```blade
-@boost(string $name, array $variables = [], string $store = 'array')
+@boost(string|array $key, array $options = [])
+    <x-component />
+@endboost
+
+@boost(array $options = [])
     <x-component />
 @endboost
 ```
+
+## Parameters
+```
+$key: string|array // Required, arrays will be joined with a "."
+$options: [
+    'key': string|array, // see above (required)
+    'store': string, // The cache store to use (default: array)
+    'raw': bool, // Whether to escape the HTML or not (default: false)
+    'replace': [ // Variables to replace in the HTML (optional)
+        '{foo}' => 'bar'
+    ],
+];
+```
+
+## Usage
+The `@boost` directive can be used to wrap any Blade code. It will render the blade code once and cache the HTML and can optionally replace any variables passed to the directive via the second argument.
 
 ### Repeating Code Use Case
 A common use case would be that you're rendering a page of `<x-post.card />` components which looks like this:
@@ -55,12 +72,16 @@ Let's see how we can use the `@boost` directive to speed this up.
 
 ```blade
 @foreach($posts as $post)
-    @boost('post-card', [
-        '{name}' => $post->name,
-        '{url}' => route('post.show', $post),
-        '{image}' => $post->image,
-        '{author}' => $post->author,
-        '{description}' => $post->description
+    @boost([
+        'key' => 'post-card',
+        'replace' => [
+            '{title}' => $post->title,
+            '{name}' => $post->name,
+            '{url}' => route('post.show', $post),
+            '{image}' => $post->image,
+            '{author}' => $post->author,
+            '{description}' => $post->description
+        ]
     ])
         <x-card>
             <x-link href="{url}">
@@ -81,9 +102,41 @@ Let's see how we can use the `@boost` directive to speed this up.
 @endforeach
 ```
 
-Wrapping the whole component in the `@boost` directive will store the HTML in the cache, then replace the passed variables with the values from the `$post` object and result in Blade only rendering **a single component instead of 270** 🚀.
+Wrapping the whole component in the `@boost` directive will store the HTML in the cache, then replace the passed variables with the values from the `$post` object and results in Blade only rendering **1 component instead of 270** 🚀.
 
 You could use the `file` cache store and render zero components (after the first request) but you'll need to clear the cache when you make changes to the component.
+
+### But I Have an `if` Statment in There!
+
+If you want to conditionally show the badge, you'll want to update the key to include the condition so that the cache is different for each condition.
+
+Passing the key as an array with all your conditions, `@boost` will join the array with a `.` and use that as the cache key.
+
+
+```blade
+@foreach($posts as $post)
+    @boost([
+        'key' => ['post-card', $post->show_author_badge], // changed
+        'replace' => [
+            '{name}' => $post->name,
+            '{author}' => $post->author,
+            '{url}' => route('post.show', $post),
+        ]
+    ])
+        <x-card>
+            <x-heading as="h3">{title}</x-heading>
+
+            @if($post->show_author_badge)
+                <x-badge class="absolute top-0 left-0">{author}</x-badge>
+            @endif
+
+            <x-button href="{url}">
+                Read More
+            </x-button>
+        </x-card>
+    @endboost
+@endforeach
+```
 
 ### Large Component Use Case
 Another common use case would be that you're rendering a page with a single components with many smaller other components.
@@ -119,19 +172,25 @@ Another common use case would be that you're rendering a page with a single comp
     </x-grid>
     <div class="text-center">
         <x-text>
-            &copy; {{ date('Y') }} My Company
+            &copy; {{ date('Y') }} {{ config('company.name') }}
         </x-text>
     </div>
 </x-footer>
 ```
 
 To speed this up we can use the `@boost` directive to cache the HTML for the footer and only render it once.
-By default, @boost uses the `array` cache store, which is the fastest cache store available but is not persistent, this use case you'll want to use the `file` cache store.
+By default, `@boost` uses the `array` cache store, which is the fastest cache store available but is not persistent, this use case you'll want to use the `file` cache store.
 You can do this by passing a third argument to the `@boost` directive.
 
 Let's see how we can use the `@boost` directive to speed this up.
 ```blade
-@boost('footer', ['{year}' => date('Y')], 'file')
+@boost([
+    'key' => 'footer',
+    'store' => 'file'
+    'replace' => [
+        '{year}' => date('Y')
+    ],
+])
     <x-footer>
         <x-grid cols="4">
             <x-grid.item>
@@ -162,7 +221,7 @@ Let's see how we can use the `@boost` directive to speed this up.
         </x-grid>
         <div class="text-center">
             <x-text>
-                &copy; {year} My Company
+                &copy; {year} {{ config('company.name') }}
             </x-text>
         </div>
     </x-footer>
@@ -171,7 +230,44 @@ Let's see how we can use the `@boost` directive to speed this up.
 
 Now, Blade will just render this component once and store the HTML in the cache. The next time the page is loaded, the pre-rendered component will be stored in the `file` cache store. This is useful if you want to speed up large, but simple components that are used on every page and only rendered once.
 
+### Simple Small Repeating Use Case
+Alternative syntax you can pass the key as the first parameter which is handle for simple cases where you don't need to pass any options, or you just prefer to pass the key as the first parameter.
+
+```blade
+@boost('recently-added-badge')
+    <x-badge>
+        Recently Added
+    </x-badge>
+@endboost
+```
+
 Mind you that the `@boost` directive will use the `Cache::rememberForever()` under the hood so it's up to you to clear the cache when you make changes to the component.
+
+
+### Escaping
+The `@boost` directive will escape the HTML by default using [Laravel's e() function](https://laravel.com/docs/strings#method-e). If you want to render the HTML without escaping, you can pass the `raw` option to the directive. This will allow you to output raw HTML without any escaping, which can be useful in certain scenarios where you trust the content being rendered.
+
+```blade
+@boost([
+    'key' => 'raw-html',
+    'replace' => [
+        '{foor}' => 'bar'
+    ],
+    'raw' => true
+])
+```
+
+### Cache Store
+The `@boost` directive will prefix the cache key with the `blade-boost-directive.` prefix which is configurable in the config file. This is to avoid collisions with other packages or parts of your application.
+
+If you wish to clear a specific cache key, you can use the following.
+
+```php
+// get the real cache key @boost uses
+$key = \AngusMcRitchie\BladeBoostDirective\Boost::prefix('my-key');
+
+cache()->store('array')->forget($key);
+```
 
 ## Configuration
 You can publish the configuration file with the following command:
