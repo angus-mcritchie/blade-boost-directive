@@ -68,10 +68,18 @@ class Boost
                     return new \Illuminate\Support\HtmlString(ob_get_clean());
                 })(get_defined_vars());
 
-                if (\$__boostDirectiveReplace) {
-                    echo str_replace(array_keys(\$__boostDirectiveReplace), \$__boostDirectiveReplace, \Illuminate\Support\Facades\Cache::store(\$__boostDirectiveStore)->rememberForever(\$__boostDirectiveKey, \$__boostDirectiveCallback));
-                } else {
-                    echo \Illuminate\Support\Facades\Cache::store(\$__boostDirectiveStore)->rememberForever(\$__boostDirectiveKey, \$__boostDirectiveCallback);
+                if (config()->get('blade-boost-directive.enabled')) {
+                    if (\$__boostDirectiveReplace) {
+                        echo str_replace(array_keys(\$__boostDirectiveReplace), \$__boostDirectiveReplace, \Illuminate\Support\Facades\Cache::store(\$__boostDirectiveStore)->rememberForever(\$__boostDirectiveKey, \$__boostDirectiveCallback));
+                    } else {
+                        echo \Illuminate\Support\Facades\Cache::store(\$__boostDirectiveStore)->rememberForever(\$__boostDirectiveKey, \$__boostDirectiveCallback);
+                    }
+                } else{
+                    if (\$__boostDirectiveReplace) {
+                        echo str_replace(array_keys(\$__boostDirectiveReplace), \$__boostDirectiveReplace, \$__boostDirectiveCallback(get_defined_vars()));
+                    } else {
+                        echo \$__boostDirectiveCallback(get_defined_vars());
+                    }
                 }
 
                 unset(
@@ -92,6 +100,6 @@ class Boost
      */
     public static function prefix(string $key): string
     {
-        return config('blade-boost-directive.prefix').$key;
+        return config('blade-boost-directive.prefix') . $key;
     }
 }
