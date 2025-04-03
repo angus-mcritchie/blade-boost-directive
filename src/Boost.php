@@ -100,6 +100,6 @@ class Boost
      */
     public static function prefix(string $key): string
     {
-        return config('blade-boost-directive.prefix') . $key;
+        return config('blade-boost-directive.prefix').$key;
     }
 }

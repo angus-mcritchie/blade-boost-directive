@@ -68,7 +68,7 @@ it('can replace with raw html', function () {
             key: {value}
         @endboost
     BLADE)
-        ->toContain('key: ' . html_entity_decode('&lt;script&gt;alert(1)&lt;/script&gt;'));
+        ->toContain('key: '.html_entity_decode('&lt;script&gt;alert(1)&lt;/script&gt;'));
 });
 
 it('can throw exception when no arguments provided', function () {
@@ -173,7 +173,6 @@ it('can execute readme examples', function () {
         ->toContain('Post 1')
         ->toContain('Post 2');
 });
-
 
 it('can be disabled by config and still replace variables', function () {
     config()->set('blade-boost-directive.enabled', false);

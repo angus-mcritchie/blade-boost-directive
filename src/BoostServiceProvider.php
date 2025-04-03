@@ -30,7 +30,7 @@ class BoostServiceProvider extends PackageServiceProvider
      */
     public function packageBooted()
     {
-        Blade::directive('boost', fn(string $expression) => Boost::open($expression));
-        Blade::directive('endboost', fn() => Boost::close());
+        Blade::directive('boost', fn (string $expression) => Boost::open($expression));
+        Blade::directive('endboost', fn () => Boost::close());
     }
 }
