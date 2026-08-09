@@ -1,3 +1,5 @@
+
+
 # Lightning-Fast Blade Components with `@boost`
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/angus-mcritchie/blade-boost-directive.svg?style=flat-square)](https://packagist.org/packages/angus-mcritchie/blade-boost-directive)
@@ -206,7 +208,7 @@ Let's see how we can use the `@boost` directive to speed this up.
 ```blade
 @boost([
     'key' => 'footer',
-    'store' => 'file'
+    'store' => 'file',
     'replace' => [
         '{year}' => date('Y')
     ],
